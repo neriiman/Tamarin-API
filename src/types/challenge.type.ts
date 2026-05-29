@@ -12,3 +12,7 @@ export type ChallengesWithMeta = {
   data: ChallengeRow[];
   totalCount: number;
 };
+
+export type Challenge = ChallengeRow & {
+  slug: string;
+};

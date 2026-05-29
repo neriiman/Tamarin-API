@@ -6,6 +6,8 @@ declare global {
       user?: {
         id: string;
       };
+      validatedQuery?: unknown;
+      validatedParams?: unknown;
     }
   }
 }

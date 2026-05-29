@@ -1,4 +1,4 @@
-import type { ChallengesWithMeta } from '../types/challenge.type.js';
+import type { ChallengeRow, ChallengesWithMeta } from '../types/challenge.type.js';
 import type { GetChallengesQuery } from '../validators/challenges.validation.js';
 import { pool } from '../config/db.js';
 
@@ -10,7 +10,7 @@ export const getChallengesFromDB = async (
   const baseWhere = search
     ? `
   WHERE 
-      title ILIKE '%'  | |  $1  | |  '%'
+      title ILIKE '%'  ||  $1  ||  '%'
   `
     : '';
 
@@ -52,4 +52,18 @@ export const getChallengesFromDB = async (
     data: dataResult.rows,
     totalCount,
   };
+};
+
+export const getChallengeByIdFromDB = async (id: string): Promise<ChallengeRow> => {
+  const result = await pool.query(
+    `
+    SELECT * 
+    FROM challenges
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [id],
+  );
+
+  return result.rows[0];
 };

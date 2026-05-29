@@ -9,3 +9,9 @@ export const getChallengesQuerySchema = z.object({
 });
 
 export type GetChallengesQuery = z.infer<typeof getChallengesQuerySchema>;
+
+export const getChallengeByIdSchema = z.object({
+  id: z.uuid(),
+});
+
+export type getChallengeByIdParams = z.infer<typeof getChallengeByIdSchema>;

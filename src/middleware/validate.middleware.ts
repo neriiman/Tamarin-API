@@ -1,5 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { ZodObject } from 'zod';
+import type {
+  getChallengeByIdParams,
+  GetChallengesQuery,
+} from '../validators/challenges.validation.js';
 
 export const validateBody =
   (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
@@ -21,6 +25,18 @@ export const validateQuery =
       return next(result.error);
     }
 
-    req.query = result.data as Request['query'];
+    req.validatedQuery = result.data as GetChallengesQuery;
+    next();
+  };
+
+export const validateParams =
+  (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req.params);
+
+    if (!result.success) {
+      return next(result.error);
+    }
+
+    req.validatedParams = result.data as getChallengeByIdParams;
     next();
   };
