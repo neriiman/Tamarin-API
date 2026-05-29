@@ -1,6 +1,5 @@
-import type z from 'zod';
 import { toSafeUser, type SafeUser } from '../mappers/user.mapper.js';
-import type { signInSchema, signUpSchema } from '../validators/auth.validation.js';
+import type { SignInBody, SignUpBody } from '../validators/auth.validation.js';
 import bcrypt from 'bcrypt';
 import {
   createUserInDb,
@@ -9,7 +8,7 @@ import {
 } from '../db/users.repo.js';
 import { AppError } from '../errors/AppError.js';
 
-export const createUser = async (data: z.infer<typeof signUpSchema>): Promise<SafeUser> => {
+export const createUser = async (data: SignUpBody): Promise<SafeUser> => {
   const passwordHashed = await bcrypt.hash(data.password, 10);
 
   const user = await createUserInDb({
@@ -29,7 +28,7 @@ export const assertUserNotExtists = async (username: string, email: string) => {
   if (user) throw new AppError('Username or email already exists', 409);
 };
 
-export const signIn = async (data: z.infer<typeof signInSchema>) => {
+export const signIn = async (data: SignInBody) => {
   const user = await findUserByEmailInDb(data.email);
 
   if (!user) throw new AppError('Invalid credentials', 401);

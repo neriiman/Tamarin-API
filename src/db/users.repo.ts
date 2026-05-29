@@ -1,8 +1,7 @@
-import type z from 'zod';
 import { pool } from '../config/db.js';
-import { signUpSchema } from '../validators/auth.validation.js';
+import { type SignUpBody } from '../validators/auth.validation.js';
 
-type SafeCreateUserInput = Omit<z.infer<typeof signUpSchema>, 'password'> & {
+type SafeCreateUserInput = Omit<SignUpBody, 'password'> & {
   passwordHashed: string;
 };
 
