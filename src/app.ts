@@ -7,6 +7,7 @@ import usersRoutes from './routes/users.routes.js';
 import challengesRoutes from './routes/challenges.routes.js';
 import categoriesRouter from './routes/categories.routes.js';
 import welcomeRoutes from './routes/welcome.routes.js';
+import videosRouter from './routes/videos.routes.js';
 
 const app = express();
 
@@ -24,5 +25,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/challenges', challengesRoutes);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/videos', videosRouter);
 
 export default app;
