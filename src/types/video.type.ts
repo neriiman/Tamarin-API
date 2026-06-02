@@ -1,3 +1,5 @@
+import type { ResultsWithMeta, ResultsWithTotalCount } from './api.type.js';
+
 export type Video = {
   id: string;
   url: string;
@@ -7,3 +9,7 @@ export type Video = {
   duration: number;
   view_count: number;
 };
+
+export type VideosWithTotalCount = ResultsWithTotalCount<Video>;
+
+export type VideosWithMeta = ResultsWithMeta<Video>;

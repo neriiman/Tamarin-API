@@ -2,9 +2,9 @@ import type { GetChallengesQuery } from '../validators/challenges.validation.js'
 import { getChallengeByIdFromDb, getChallengesFromDB } from '../db/challenges.repo.js';
 import { AppError } from '../errors/AppError.js';
 import { createChallengeSlug } from '../utils/slugify.js';
-import type { ChallengeWithSlug } from '../types/challenge.type.js';
+import type { ChallengesWithMeta, ChallengeWithSlug } from '../types/challenge.type.js';
 
-export const getChallenges = async (query: GetChallengesQuery) => {
+export const getChallenges = async (query: GetChallengesQuery): Promise<ChallengesWithMeta> => {
   const { data, totalCount } = await getChallengesFromDB(query);
   const { page, limit } = query;
 

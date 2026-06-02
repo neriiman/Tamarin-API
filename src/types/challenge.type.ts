@@ -1,3 +1,4 @@
+import type { ResultsWithMeta, ResultsWithTotalCount } from './api.type.js';
 import type { CategoryRow } from './category.type.js';
 
 export type Challenge = {
@@ -11,10 +12,8 @@ export type Challenge = {
   categories: CategoryRow[];
 };
 
-export type ChallengesWithMeta = {
-  data: Challenge[];
-  totalCount: number;
-};
+export type ChallengesWithTotalCount = ResultsWithTotalCount<Challenge>;
+export type ChallengesWithMeta = ResultsWithMeta<Challenge>;
 
 export type ChallengeWithSlug = Challenge & {
   slug: string;

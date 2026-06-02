@@ -1,10 +1,10 @@
-import type { Challenge, ChallengesWithMeta } from '../types/challenge.type.js';
+import type { Challenge, ChallengesWithTotalCount } from '../types/challenge.type.js';
 import type { GetChallengesQuery } from '../validators/challenges.validation.js';
 import { pool } from '../config/db.js';
 
 export const getChallengesFromDB = async (
   query: GetChallengesQuery,
-): Promise<ChallengesWithMeta> => {
+): Promise<ChallengesWithTotalCount> => {
   const { page, limit, sort, order, search, categoryId } = query;
   const offset = (page - 1) * limit;
 
