@@ -1,9 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { ZodObject } from 'zod';
-import type {
-  getChallengeByIdParams,
-  GetChallengesQuery,
-} from '../validators/challenges.validation.js';
+import type { GetChallengesQuery } from '../validators/challenges.validation.js';
 
 export const validateBody =
   (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
@@ -30,13 +27,14 @@ export const validateQuery =
   };
 
 export const validateParams =
-  (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
+  <T>(schema: ZodObject) =>
+  (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.params);
 
     if (!result.success) {
       return next(result.error);
     }
 
-    req.validatedParams = result.data as getChallengeByIdParams;
+    req.validatedParams = result.data as T;
     next();
   };

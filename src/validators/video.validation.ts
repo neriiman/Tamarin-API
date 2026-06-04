@@ -9,7 +9,9 @@ export const getVideosQuerySchema = z.object({
   order: z.enum(['asc', 'desc']).default('desc'),
 });
 
-export type getVideosQuery = z.infer<typeof getVideosQuerySchema>;
+export type GetVideosQuery = z.infer<typeof getVideosQuerySchema> & {
+  userId: string | null;
+};
 
 export const getVideoByIdSchema = z.object({
   id: z.uuid(),

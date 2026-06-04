@@ -1,46 +1,70 @@
 import { pool } from '../config/db.js';
 import type { Video, VideosWithTotalCount } from '../types/video.type.js';
-import type { getVideosQuery } from '../validators/video.validation.js';
+import type { GetVideosQuery } from '../validators/video.validation.js';
 
-export const getVideosFromDb = async (query: getVideosQuery): Promise<VideosWithTotalCount> => {
-  const { page, limit, type, search, sort, order } = query;
+export const getVideosFromDb = async (query: GetVideosQuery): Promise<VideosWithTotalCount> => {
+  const { page, limit, type, search, sort, order, userId } = query;
+
   const offset = (page - 1) * limit;
 
+  // base param (userId for favorites)
+  const baseValues = [userId ? String(userId) : null];
+  // filter values shared between data + count
+  const filterValues: (string | number)[] = [];
   const whereParts: string[] = [];
-  const values: (number | string)[] = [];
+
   let i = 1;
+
+  // filters
   if (type) {
-    whereParts.push(`type = $${i}`);
-    values.push(type);
     i++;
+    whereParts.push(`v.type = $${i}`);
+    filterValues.push(type);
   }
+
   if (search) {
-    whereParts.push(`title ILIKE '%' || $${i} || '%'`);
-    values.push(search);
     i++;
+    whereParts.push(`v.title ILIKE '%' || $${i} || '%'`);
+    filterValues.push(search);
   }
 
   const whereSql = whereParts.length ? `WHERE ${whereParts.join(' AND ')}` : '';
 
-  values.push(limit, offset);
+  // FINAL values
+  const dataValues = [userId ?? null, ...filterValues, limit, offset];
+  const countValues = [userId ?? null, ...filterValues];
+
+  // indexes (simple + stable)
+  const limitIndex = dataValues.length - 1;
+  const offsetIndex = dataValues.length;
 
   const dataSql = `
-  SELECT * 
-  FROM videos
-  ${whereSql}
-  ORDER BY ${sort} ${order}
-  LIMIT $${i}
-  OFFSET $${i + 1}
+    SELECT v.*,
+    CASE
+  WHEN $1 IS NULL THEN false
+  ELSE EXISTS (
+    SELECT 1
+    FROM user_favourites uf
+    WHERE uf.video_id = v.id
+    AND uf.user_id = $1::uuid
+  )
+END AS "isFavourited"
+    FROM videos v
+    ${whereSql}
+    ORDER BY v.${sort} ${order}
+    LIMIT $${limitIndex}
+    OFFSET $${offsetIndex}
   `;
 
   const countSql = `
-  SELECT COUNT(*) AS total_count
-  FROM videos
-  ${whereSql}
+    SELECT COUNT(*) AS total_count
+    FROM videos v
+    ${whereSql}
   `;
+
   const [dataResult, countResult] = await Promise.all([
-    pool.query(dataSql, values),
-    pool.query(countSql, values.slice(0, i - 1)),
+    pool.query(dataSql, dataValues),
+    pool.query(countSql, countValues),
   ]);
 
   return {
@@ -49,14 +73,28 @@ export const getVideosFromDb = async (query: getVideosQuery): Promise<VideosWith
   };
 };
 
-export const getVideoByIdFromDb = async (id: string): Promise<Video | null> => {
+// SINGLE VIDEO
+export const getVideoByIdFromDb = async (
+  videoId: string,
+  userId: string | null,
+): Promise<Video | null> => {
   const result = await pool.query(
     `
-        SELECT * FROM videos
-        WHERE id = $1
-
-        `,
-    [id],
+    SELECT v.*,
+      CASE
+        WHEN $2::uuid IS NULL THEN false
+        ELSE EXISTS (
+          SELECT 1
+          FROM user_favourites uf
+          WHERE uf.video_id = v.id
+          AND uf.user_id = $2::uuid
+        )
+      END AS "is_favourited"
+    FROM videos v
+    WHERE v.id = $1
+    `,
+    [videoId, userId ?? null],
   );
+
   return result.rows[0] ?? null;
 };
