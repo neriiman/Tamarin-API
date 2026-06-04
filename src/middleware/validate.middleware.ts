@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { ZodObject } from 'zod';
-import type { GetChallengesQuery } from '../validators/challenges.validation.js';
 
 export const validateBody =
   (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
@@ -15,14 +14,15 @@ export const validateBody =
   };
 
 export const validateQuery =
-  (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
+  <T>(schema: ZodObject) =>
+  (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.query);
 
     if (!result.success) {
       return next(result.error);
     }
 
-    req.validatedQuery = result.data as GetChallengesQuery;
+    req.validatedQuery = result.data as T;
     next();
   };
 
