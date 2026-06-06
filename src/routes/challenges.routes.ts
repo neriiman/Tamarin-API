@@ -4,10 +4,13 @@ import { validateParams, validateQuery } from '../middleware/validate.middleware
 import {
   getChallengeByIdSchema,
   getChallengesQuerySchema,
+  startChallengeSchema,
+  type startChallengeParams,
 } from '../validators/challenges.validation.js';
 import {
   getChallengeByIdController,
   getChallengesController,
+  startChallengeController,
 } from '../controllers/challenges.controller.js';
 import {
   getChallengeDaysSchema,
@@ -19,6 +22,7 @@ import {
   getChallengeDaysController,
   getChallengeDayWithVideosController,
 } from '../controllers/challengeDay.controller.js';
+import { authMiddleware } from '../middleware/auth.middleware.js';
 
 const challengesRoutes = e.Router();
 
@@ -36,6 +40,13 @@ challengesRoutes.get(
   '/:challengeId/days/:dayNumber',
   validateParams<GetChallengeDayVideosParams>(getChallengeDayVideosSchema),
   getChallengeDayWithVideosController,
+);
+
+challengesRoutes.post(
+  '/:challengeId/start/',
+  authMiddleware,
+  validateParams<startChallengeParams>(startChallengeSchema),
+  startChallengeController,
 );
 
 export default challengesRoutes;

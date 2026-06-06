@@ -16,3 +16,9 @@ export const getChallengeByIdSchema = z.object({
 });
 
 export type getChallengeByIdParams = z.infer<typeof getChallengeByIdSchema>;
+
+export const startChallengeSchema = z.object({
+  challengeId: z.uuid(),
+});
+
+export type startChallengeParams = z.infer<typeof startChallengeSchema>;
