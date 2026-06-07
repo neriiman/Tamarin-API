@@ -12,9 +12,19 @@ export const validateGetUserChallengesQuery = validateQuery<GetUserChallengesQue
 );
 
 export const userChallengeIdSchema = z.object({
-  id: z.uuid(),
+  userChallengeId: z.uuid(),
 });
 
 export type userChallengeIdParams = z.infer<typeof userChallengeIdSchema>;
 
 export const validateUserChallengeId = validateParams<userChallengeIdParams>(userChallengeIdSchema);
+
+export const completeVideoParamsSchema = z.object({
+  userChallengeId: z.uuid(),
+  challengeDayVideoId: z.uuid(),
+});
+
+export type CompleteVideoParams = z.infer<typeof completeVideoParamsSchema>;
+
+export const validateCompleteVideoParams =
+  validateParams<CompleteVideoParams>(completeVideoParamsSchema);

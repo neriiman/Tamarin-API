@@ -107,3 +107,72 @@ export const markUserChallengeAbandonedInDb = async (
 
   return rows[0].id;
 };
+
+export const completeChallengeVideoInDb = async (
+  userChallengeId: string,
+  challengeDayVideoId: string,
+) => {
+  await pool.query(
+    `
+    INSERT INTO completed_challenge_day_videos (
+    user_challenge_id, 
+    challenge_day_video_id
+    )
+    VALUES
+    ($1, $2 )
+    ON CONFLICT DO NOTHING;
+    `,
+    [userChallengeId, challengeDayVideoId],
+  );
+};
+
+export const undoChallengeDayVideoInDb = async (
+  userChallengeId: string,
+  challengeDayVideoId: string,
+) => {
+  await pool.query(
+    `
+    DELETE FROM completed_challenge_day_videos 
+    WHERE
+    user_challenge_id = $1
+      AND  challenge_day_video_id  = $2
+    `,
+    [userChallengeId, challengeDayVideoId],
+  );
+};
+
+export const getOwnedUserChallengeByIdFromDb = async (
+  userChallengeId: string,
+  userId: string,
+): Promise<boolean> => {
+  const { rows } = await pool.query(
+    `
+    SELECT 1
+    FROM user_challenges
+    WHERE id = $1
+      AND user_id = $2
+      AND status = 'active'
+    `,
+    [userChallengeId, userId],
+  );
+  return rows.length > 0;
+};
+
+export const userChallengeOwnsVideoInDb = async (
+  userChallengeId: string,
+  challengeDayVideoId: string,
+): Promise<boolean> => {
+  const { rows } = await pool.query(
+    `
+    SELECT 1
+    FROM user_challenges uc
+    JOIN challenge_day_videos cdv
+      ON cdv.challenge_id = uc.challenge_id 
+    WHERE uc.id = $1
+      AND cdv.id = $2
+    LIMIT 1;
+    `,
+    [userChallengeId, challengeDayVideoId],
+  );
+  return rows.length > 0;
+};
