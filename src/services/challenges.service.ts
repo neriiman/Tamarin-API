@@ -3,7 +3,7 @@ import { getChallengeByIdFromDb, getChallengesFromDB } from '../db/challenges.re
 import { AppError } from '../errors/AppError.js';
 import { createChallengeSlug } from '../utils/slugify.js';
 import type { ChallengesWithMeta, ChallengeWithSlug } from '../types/challenge.type.js';
-import { getActiveChallengeFromDb, startChallengeInDb } from '../db/userChallenges.repo.js';
+import { getActiveUserChallengeFromDb, startChallengeInDb } from '../db/userChallenges.repo.js';
 
 export const getChallenges = async (query: GetChallengesQuery): Promise<ChallengesWithMeta> => {
   const { data, totalCount } = await getChallengesFromDB(query);
@@ -41,7 +41,7 @@ export const getChallengeById = async (id: string): Promise<ChallengeWithSlug> =
 export const startChallenge = async (userId: string, challengeId: string) => {
   await getChallengeById(challengeId);
 
-  const active = await getActiveChallengeFromDb(userId);
+  const active = await getActiveUserChallengeFromDb(userId);
   if (active) throw new AppError('User already has an active challenge', 409);
   const userChallengeId = await startChallengeInDb(userId, challengeId);
   return { userChallengeId };

@@ -4,19 +4,14 @@ import { validateParams, validateQuery } from '../middleware/validate.middleware
 import { getVideoByIdSchema, getVideosQuerySchema } from '../validators/video.validation.js';
 import { optionalAuthMiddleware } from '../middleware/auth.middleware.js';
 
-const videosRouter = e.Router();
+const router = e.Router();
 
-videosRouter.get(
-  '/',
-  optionalAuthMiddleware,
-  validateQuery(getVideosQuerySchema),
-  getVideosController,
-);
-videosRouter.get(
+router.get('/', optionalAuthMiddleware, validateQuery(getVideosQuerySchema), getVideosController);
+router.get(
   '/:id',
   optionalAuthMiddleware,
   validateParams(getVideoByIdSchema),
   getVideoByIdController,
 );
 
-export default videosRouter;
+export default router;

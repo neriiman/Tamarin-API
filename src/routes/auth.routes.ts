@@ -7,10 +7,10 @@ import {
 import { validateBody } from '../middleware/validate.middleware.js';
 import { signInSchema } from '../validators/auth.validation.js';
 
-const authRoutes = e.Router();
+const router = e.Router();
 
-authRoutes.post('/signIn', validateBody(signInSchema), signInController);
-authRoutes.post('/refresh', refreshController);
-authRoutes.post('/signOut', signOutController);
+router.post('/signIn', validateBody(signInSchema), signInController);
+router.post('/refresh', refreshController);
+router.post('/signOut', signOutController);
 
-export default authRoutes;
+export default router;

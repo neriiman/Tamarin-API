@@ -24,29 +24,29 @@ import {
 } from '../controllers/challengeDay.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 
-const challengesRoutes = e.Router();
+const router = e.Router();
 
-challengesRoutes.get('/', validateQuery(getChallengesQuerySchema), getChallengesController);
+router.get('/', validateQuery(getChallengesQuerySchema), getChallengesController);
 
-challengesRoutes.get('/:id', validateParams(getChallengeByIdSchema), getChallengeByIdController);
+router.get('/:id', validateParams(getChallengeByIdSchema), getChallengeByIdController);
 
-challengesRoutes.get(
+router.get(
   '/:challengeId/days',
   validateParams<GetChallengeDaysParams>(getChallengeDaysSchema),
   getChallengeDaysController,
 );
 
-challengesRoutes.get(
+router.get(
   '/:challengeId/days/:dayNumber',
   validateParams<GetChallengeDayVideosParams>(getChallengeDayVideosSchema),
   getChallengeDayWithVideosController,
 );
 
-challengesRoutes.post(
+router.post(
   '/:challengeId/start/',
   authMiddleware,
   validateParams<startChallengeParams>(startChallengeSchema),
   startChallengeController,
 );
 
-export default challengesRoutes;
+export default router;

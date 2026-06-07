@@ -4,9 +4,9 @@ import { signUpSchema } from '../validators/auth.validation.js';
 import { findMe, signUpController } from '../controllers/users.controller.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 
-const usersRoutes = e.Router();
+const router = e.Router();
 
-usersRoutes.post('/signUp', validateBody(signUpSchema), signUpController);
-usersRoutes.get('/me', authMiddleware, findMe);
+router.post('/signUp', validateBody(signUpSchema), signUpController);
+router.get('/me', authMiddleware, findMe);
 
-export default usersRoutes;
+export default router;

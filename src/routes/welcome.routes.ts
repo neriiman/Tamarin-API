@@ -1,8 +1,8 @@
 import e from 'express';
 import { welcomeContoller } from '../controllers/welcome.controller.js';
 
-const welcomeRoutes = e.Router();
+const router = e.Router();
 
-welcomeRoutes.get('/', welcomeContoller);
+router.get('/', welcomeContoller);
 
-export default welcomeRoutes;
+export default router;

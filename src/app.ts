@@ -9,6 +9,7 @@ import categoriesRouter from './routes/categories.routes.js';
 import welcomeRoutes from './routes/welcome.routes.js';
 import videosRouter from './routes/videos.routes.js';
 import favouritesRouter from './routes/favourites.route.js';
+import userChallengesRouter from './routes/userChallenges.routes.js';
 
 const app = express();
 
@@ -28,5 +29,6 @@ app.use('/api/challenges', challengesRoutes);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/videos', videosRouter);
 app.use('/api/favourites', favouritesRouter);
+app.use('/api/user-challenges', userChallengesRouter);
 
 export default app;

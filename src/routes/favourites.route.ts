@@ -7,14 +7,14 @@ import { authMiddleware } from '../middleware/auth.middleware.js';
 import { validateParams } from '../middleware/validate.middleware.js';
 import { toggleFavouriteParamsSchema } from '../validators/favourites.validation.js';
 
-const favouritesRouter = e.Router();
+const router = e.Router();
 
-favouritesRouter.post(
+router.post(
   '/videos/:videoId',
   authMiddleware,
   validateParams(toggleFavouriteParamsSchema),
   toggleFavouriteController,
 );
-favouritesRouter.post('/me', authMiddleware, getFavouritesController);
+router.post('/me', authMiddleware, getFavouritesController);
 
-export default favouritesRouter;
+export default router;
