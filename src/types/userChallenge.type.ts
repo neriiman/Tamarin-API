@@ -1,8 +1,9 @@
 export type UserChallenge = {
   id: string;
-  userId: string;
-  challengeId: string;
-  startedAt: string;
-  completedAt: string | null;
+  user_id: string;
+  challenge_id: string;
+  started_at: string;
+  completed_at: string | null;
+  abandoned_at: string | null;
   status: 'active' | 'completed' | 'paused' | 'abandoned';
 };

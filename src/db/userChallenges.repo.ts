@@ -22,13 +22,7 @@ export const getActiveUserChallengeFromDb = async (
 ): Promise<UserChallenge | null> => {
   const { rows } = await pool.query(
     `
-        SELECT
-            id,
-            user_id AS "userId",
-            challenge_id AS "challengeId",
-            started_at AS "startedAt",
-            completed_at AS "completedAt",
-            status 
+        SELECT *
         FROM user_challenges
         WHERE user_id = $1
             AND status = 'active'
@@ -60,13 +54,7 @@ export const getUserChallengesFromDb = async (
 
   const { rows } = await pool.query(
     `
-        SELECT
-            id,
-            user_id AS "userId",
-            challenge_id AS "challengeId",
-            started_at AS "startedAt",
-            completed_at AS "completedAt",
-            status 
+        SELECT *
         FROM user_challenges
          ${whereSql}
         ORDER BY started_at DESC;
@@ -74,4 +62,48 @@ export const getUserChallengesFromDb = async (
     q.values,
   );
   return rows;
+};
+
+export const markUserChallengeCompletedInDb = async (
+  userChallengeId: string,
+  userId: string,
+): Promise<string | null> => {
+  const { rows } = await pool.query(
+    `
+    UPDATE user_challenges
+    SET 
+      status = 'completed' ,
+      completed_at = NOW()
+    WHERE id = $1
+      AND user_id =  $2
+      And status = 'active' 
+    RETURNING id
+    `,
+    [userChallengeId, userId],
+  );
+  if (rows.length === 0) return null;
+
+  return rows[0].id;
+};
+
+export const markUserChallengeAbandonedInDb = async (
+  userChallengeId: string,
+  userId: string,
+): Promise<string | null> => {
+  const { rows } = await pool.query(
+    `
+    UPDATE user_challenges
+    SET 
+      status = 'abandoned' ,
+      abandoned_at = NOW()
+    WHERE id = $1
+      AND user_id =  $2
+      And status = 'active' 
+    RETURNING id
+    `,
+    [userChallengeId, userId],
+  );
+  if (rows.length === 0) return null;
+
+  return rows[0].id;
 };
