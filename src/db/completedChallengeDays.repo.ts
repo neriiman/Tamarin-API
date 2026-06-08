@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js';
+import type { CompletedChallengeDay } from '../types/completedChallengeDay.type.js';
 
 export const challengeDayExistsInDb = async (userChallengeId: string, dayNumber: number) => {
   const { rows } = await pool.query(
@@ -124,4 +125,20 @@ export const undoChallengeDayInDb = async (userChallengeId: string, dayNumber: n
   } finally {
     client.release();
   }
+};
+
+export const getCompletedDaysInDb = async (
+  userChallengeId: string,
+): Promise<CompletedChallengeDay[]> => {
+  const { rows } = await pool.query(
+    `
+    SELECT
+      day_number AS "dayNumber",
+      completed_at AS "completedAt"
+    FROM completed_challenge_days
+    where user_challenge_id = $1
+  `,
+    [userChallengeId],
+  );
+  return rows;
 };

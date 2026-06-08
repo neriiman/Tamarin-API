@@ -12,6 +12,7 @@ import {
   completeChallengeController,
   completeChallengeDayController,
   completeChallengeDayVideoController,
+  getCompletedDaysController,
   getUserChallengesController,
   undoChallengeDayController,
   undoChallengeDayVideoController,
@@ -61,6 +62,13 @@ router.delete(
   authMiddleware,
   validateCompleteDayParams,
   undoChallengeDayController,
+);
+
+router.get(
+  '/:userChallengeId/completed-days',
+  authMiddleware,
+  validateUserChallengeId,
+  getCompletedDaysController,
 );
 
 export default router;

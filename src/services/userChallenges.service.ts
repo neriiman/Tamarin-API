@@ -2,6 +2,7 @@ import { getVideoDayNumberInDb } from '../db/challengeDayVideos.repo.js';
 import {
   challengeDayExistsInDb,
   completeChallengeDayInDb,
+  getCompletedDaysInDb,
   isChallengeDayCompletedInDb,
   undoChallengeDayInDb,
 } from '../db/completedChallengeDays.repo.js';
@@ -106,4 +107,11 @@ export const undoChallengeDay = async (
   if (!dayExists) throw new AppError('Day not found', 404);
 
   await undoChallengeDayInDb(userChallengeId, dayNumber);
+};
+
+export const getUserChallengeCompletedDays = async (userChallengeId: string, userId: string) => {
+  const userOwnsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
+  if (!userOwnsChallenge) throw new AppError('Challenge not found', 404);
+
+  return await getCompletedDaysInDb(userChallengeId);
 };
