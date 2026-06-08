@@ -1,3 +1,10 @@
+import { getVideoDayNumberInDb } from '../db/challengeDayVideos.repo.js';
+import {
+  challengeDayExistsInDb,
+  completeChallengeDayInDb,
+  isChallengeDayCompletedInDb,
+  undoChallengeDayInDb,
+} from '../db/completedChallengeDays.repo.js';
 import {
   getUserChallengesFromDb,
   markUserChallengeCompletedInDb,
@@ -31,10 +38,23 @@ export const completeChallengeVideo = async (
   challengeDayVideoId: string,
   userId: string,
 ) => {
-  const ownsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
-  if (!ownsChallenge) throw new AppError('Challenge not found', 404);
+  const userOwnsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
+  if (!userOwnsChallenge) throw new AppError('Challenge not found', 404);
+
   const belongs = await userChallengeOwnsVideoInDb(userChallengeId, challengeDayVideoId);
   if (!belongs) throw new AppError('Video does not belong to challenge', 400);
+
+  const dayNumber = await getVideoDayNumberInDb(challengeDayVideoId);
+  if (!dayNumber) throw new AppError('Video not found', 404);
+
+  if (dayNumber > 1) {
+    const isPreviousDayCompleted = await isChallengeDayCompletedInDb(
+      userChallengeId,
+      dayNumber - 1,
+    );
+    if (!isPreviousDayCompleted) throw new AppError('Previous day must be completed first', 400);
+  }
+
   await completeChallengeVideoInDb(userChallengeId, challengeDayVideoId);
 };
 
@@ -43,9 +63,47 @@ export const undoChallengeVideo = async (
   challengeDayVideoId: string,
   userId: string,
 ) => {
-  const ownsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
-  if (!ownsChallenge) throw new AppError('Challenge not found', 404);
+  const userOwnsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
+  if (!userOwnsChallenge) throw new AppError('Challenge not found', 404);
+
   const belongs = await userChallengeOwnsVideoInDb(userChallengeId, challengeDayVideoId);
   if (!belongs) throw new AppError('Video does not belong to challenge', 400);
+
   await undoChallengeDayVideoInDb(userChallengeId, challengeDayVideoId);
+};
+
+export const completeChallengeDay = async (
+  userChallengeId: string,
+  dayNumber: number,
+  userId: string,
+) => {
+  const userOwnsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
+  if (!userOwnsChallenge) throw new AppError('Challenge not found', 404);
+
+  const dayExists = await challengeDayExistsInDb(userChallengeId, dayNumber);
+  if (!dayExists) throw new AppError('Day not found', 404);
+
+  if (dayNumber > 1) {
+    const isPreviousDayCompleted = await isChallengeDayCompletedInDb(
+      userChallengeId,
+      dayNumber - 1,
+    );
+    if (!isPreviousDayCompleted) throw new AppError('Previous day must be completed first', 400);
+  }
+
+  await completeChallengeDayInDb(userChallengeId, dayNumber);
+};
+
+export const undoChallengeDay = async (
+  userChallengeId: string,
+  dayNumber: number,
+  userId: string,
+) => {
+  const userOwnsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
+  if (!userOwnsChallenge) throw new AppError('Challenge not found', 404);
+
+  const dayExists = await challengeDayExistsInDb(userChallengeId, dayNumber);
+  if (!dayExists) throw new AppError('Day not found', 404);
+
+  await undoChallengeDayInDb(userChallengeId, dayNumber);
 };

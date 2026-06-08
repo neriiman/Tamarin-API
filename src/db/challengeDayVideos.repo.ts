@@ -7,9 +7,11 @@ export const getChallengeDayVideosFromDb = async (
 ): Promise<ChallengeDayVideo[]> => {
   const { rows } = await pool.query(
     `
-    SELECT v.*, 
-    cdv.order_index AS "orderIndex" ,
-    cdv.is_optional AS "IsOptional"
+    SELECT
+      cdv.id AS "challengeDayVideoId",
+      v.*,
+      cdv.order_index AS "orderIndex",
+      cdv.is_optional AS "isOptional"
 
     FROM challenge_day_videos AS cdv 
     JOIN videos v 
@@ -22,4 +24,19 @@ export const getChallengeDayVideosFromDb = async (
   );
 
   return rows;
+};
+
+export const getVideoDayNumberInDb = async (
+  challengeDayVideoId: string,
+): Promise<number | null> => {
+  const { rows } = await pool.query(
+    `
+    SELECT day_number
+    FROM challenge_day_videos 
+    WHERE id = $1
+    `,
+    [challengeDayVideoId],
+  );
+
+  return rows[0]?.day_number ?? null;
 };

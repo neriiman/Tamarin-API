@@ -2,6 +2,7 @@ import e from 'express';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 
 import {
+  validateCompleteDayParams,
   validateCompleteVideoParams,
   validateGetUserChallengesQuery,
   validateUserChallengeId,
@@ -9,8 +10,10 @@ import {
 import {
   abandonChallengeController,
   completeChallengeController,
+  completeChallengeDayController,
   completeChallengeDayVideoController,
   getUserChallengesController,
+  undoChallengeDayController,
   undoChallengeDayVideoController,
 } from '../controllers/userChallenges.controller.js';
 
@@ -44,6 +47,20 @@ router.delete(
   authMiddleware,
   validateCompleteVideoParams,
   undoChallengeDayVideoController,
+);
+
+router.post(
+  '/:userChallengeId/days/:dayNumber/complete',
+  authMiddleware,
+  validateCompleteDayParams,
+  completeChallengeDayController,
+);
+
+router.delete(
+  '/:userChallengeId/days/:dayNumber/complete',
+  authMiddleware,
+  validateCompleteDayParams,
+  undoChallengeDayController,
 );
 
 export default router;

@@ -2,6 +2,7 @@ import type { ChallengeDaySummary } from './challengeDays.type.js';
 import type { Video } from './video.type.js';
 
 export type ChallengeDayVideo = Video & {
+  challengeDayVideoId: string;
   orderIndex: number;
   isOptional: boolean;
 };

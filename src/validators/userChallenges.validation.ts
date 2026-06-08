@@ -28,3 +28,12 @@ export type CompleteVideoParams = z.infer<typeof completeVideoParamsSchema>;
 
 export const validateCompleteVideoParams =
   validateParams<CompleteVideoParams>(completeVideoParamsSchema);
+
+export const completeDayParamsSchema = z.object({
+  userChallengeId: z.uuid(),
+  dayNumber: z.coerce.number().int().min(1),
+});
+
+export type CompleteDayParams = z.infer<typeof completeDayParamsSchema>;
+
+export const validateCompleteDayParams = validateParams<CompleteDayParams>(completeDayParamsSchema);
