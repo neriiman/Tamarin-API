@@ -13,6 +13,7 @@ import {
   completeChallengeDayController,
   completeChallengeDayVideoController,
   getCompletedDaysController,
+  getTodaysProgressController,
   getUserChallengesController,
   undoChallengeDayController,
   undoChallengeDayVideoController,
@@ -69,6 +70,13 @@ router.get(
   authMiddleware,
   validateUserChallengeId,
   getCompletedDaysController,
+);
+
+router.get(
+  '/:userChallengeId/today-progress',
+  authMiddleware,
+  validateUserChallengeId,
+  getTodaysProgressController,
 );
 
 export default router;

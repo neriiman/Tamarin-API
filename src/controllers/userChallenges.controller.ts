@@ -11,6 +11,7 @@ import {
   completeChallenge,
   completeChallengeDay,
   completeChallengeVideo,
+  getTodaysProgress,
   getUserChallengeCompletedDays,
   getUserChallenges,
   undoChallengeDay,
@@ -89,4 +90,13 @@ export const getCompletedDaysController = asyncMiddleWare(async (req: Request, r
   const completedDays = await getUserChallengeCompletedDays(userChallengeId, userId);
 
   res.status(200).json({ completedDays });
+});
+
+export const getTodaysProgressController = asyncMiddleWare(async (req: Request, res: Response) => {
+  const { id: userId } = req.user!;
+  const { userChallengeId } = req.validatedParams as userChallengeIdParams;
+
+  const todaysProgress = await getTodaysProgress(userChallengeId, userId);
+
+  res.status(200).json({ todaysProgress });
 });

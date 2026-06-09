@@ -3,6 +3,8 @@ import {
   challengeDayExistsInDb,
   completeChallengeDayInDb,
   getCompletedDaysInDb,
+  getCompletedVideosForDay,
+  getCurrentDay,
   isChallengeDayCompletedInDb,
   undoChallengeDayInDb,
 } from '../db/completedChallengeDays.repo.js';
@@ -114,4 +116,16 @@ export const getUserChallengeCompletedDays = async (userChallengeId: string, use
   if (!userOwnsChallenge) throw new AppError('Challenge not found', 404);
 
   return await getCompletedDaysInDb(userChallengeId);
+};
+
+export const getTodaysProgress = async (userChallengeId: string, userId: string) => {
+  const userOwnsChallenge = await getOwnedUserChallengeByIdFromDb(userChallengeId, userId);
+  if (!userOwnsChallenge) throw new AppError('Challenge not found', 404);
+
+  const currentDay = await getCurrentDay(userChallengeId);
+  const completedVideoIds = await getCompletedVideosForDay(userChallengeId, currentDay);
+  return {
+    dayNumber: currentDay,
+    completedVideoIds,
+  };
 };

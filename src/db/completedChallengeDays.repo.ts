@@ -142,3 +142,36 @@ export const getCompletedDaysInDb = async (
   );
   return rows;
 };
+
+export const getCurrentDay = async (userChallengeId: string): Promise<number> => {
+  const { rows } = await pool.query(
+    `
+      SELECT
+       COALESCE ( MAX(day_number), 0 ) + 1 AS "currentDay"
+      FROM completed_challenge_days
+      WHERE user_challenge_id = $1
+  `,
+    [userChallengeId],
+  );
+  return rows[0].currentDay;
+};
+
+export const getCompletedVideosForDay = async (
+  userChallengeId: string,
+  dayNumber: number,
+): Promise<string[]> => {
+  const { rows } = await pool.query(
+    `
+    SELECT
+     ccdv.challenge_day_video_id,
+     ccdv.completed_at
+    FROM completed_challenge_day_videos ccdv
+    JOIN challenge_day_videos cdv
+      ON cdv.id = ccdv.challenge_day_video_id
+    WHERE ccdv.user_challenge_id = $1
+    AND cdv.day_number = $2
+  `,
+    [userChallengeId, dayNumber],
+  );
+  return rows.map((r) => r.challenge_day_video_id);
+};
